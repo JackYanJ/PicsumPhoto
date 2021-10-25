@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">PicsumPhoto</string>
+
+    <!--net-->
+    <string name="network_error">network error</string>
+    <string name="error_view_tip">click again</string>
+    <string name="json_data_error">json data error</string>
+    <string name="network_connect_error">network connect error</string>
+    <string name="network_connect_timeout">network connect timeout</string>
+    <string name="no_route_to_host">no route to host</string>
+    <string name="network_response_code_error">network response code error：</string>
+    <string name="unknown_error">unknown error</string>
+
+    <string name="srl_footer_nothing">no more data</string>
+</resources>
