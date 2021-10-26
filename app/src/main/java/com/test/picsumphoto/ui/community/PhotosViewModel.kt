@@ -28,7 +28,7 @@ class PhotosViewModel(repository: MainRepository) : ViewModel() {
                 val launches = repository.refreshPhotos()
                 Result.success(launches)
             } catch (e: Exception) {
-                Result.failure<Photos>(e)
+                Result.failure(e)
             }
             emit(resutlt)
         }

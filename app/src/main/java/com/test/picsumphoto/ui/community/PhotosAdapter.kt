@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.test.picsumphoto.Const
 import com.test.picsumphoto.R
 import com.test.picsumphoto.data.model.Photo
+import com.test.picsumphoto.extension.dp2px
 import com.test.picsumphoto.extension.inflate
 import com.test.picsumphoto.extension.load
 import com.test.picsumphoto.ui.MainActivity
@@ -23,32 +24,54 @@ import com.test.picsumphoto.ui.MainActivity
 class PhotosAdapter(val activity: MainActivity, var dataList: List<Photo>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        Const.ItemViewType.TYPE_1 ->
-            PhpotosViewHolder(R.layout.item_photo_1.inflate(parent))
+    public var type : Int = Const.ItemViewType.TYPE_2
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (type) {
         Const.ItemViewType.TYPE_2 ->
-            PhpotosViewHolder(R.layout.item_photo_2.inflate(parent))
+            FeedingViewHolder(R.layout.item_photo_2.inflate(parent))
+        Const.ItemViewType.TYPE_1 ->
+            NormalViewHolder(R.layout.item_photo_1.inflate(parent))
         else ->
-            PhpotosViewHolder(R.layout.item_photo_1.inflate(parent))
+            FeedingViewHolder(R.layout.item_photo_2.inflate(parent))
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = dataList[position]
-        holder as PhpotosViewHolder
-        item.run {
-            holder.photo.load(item.download_url ?: "")
 
-            holder.author.text = item.author
+        if (type == Const.ItemViewType.TYPE_2){
+            holder as FeedingViewHolder
+            item.run {
+                holder.photo.load(item.download_url ?: "")
+            }
+        }else if (type == Const.ItemViewType.TYPE_1){
+            holder as NormalViewHolder
+            item.run {
+                holder.photo.load(item.download_url ?: "")
+
+                holder.author.text = item.author
+            }
         }
+
+
+
     }
 
     override fun getItemCount() = dataList.size
 
     override fun getItemViewType(position: Int): Int {
-        return if (position % 2 == 0) Const.ItemViewType.TYPE_1 else Const.ItemViewType.TYPE_2
+        return type
     }
 
-    inner class PhpotosViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class FeedingViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val photo = view.findViewById<ImageView>(R.id.photo)
+        val rootView = view.findViewById<LinearLayout>(R.id.rootView)
+    }
+
+    inner class NormalViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val photo = view.findViewById<ImageView>(R.id.photo)
         val author = view.findViewById<TextView>(R.id.author)
         val rootView = view.findViewById<LinearLayout>(R.id.rootView)

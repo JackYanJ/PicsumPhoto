@@ -1,17 +1,19 @@
 package com.test.picsumphoto.ui
 
 import android.os.Bundle
-import android.view.View
-import android.view.ViewStub
+import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.spacex.extension.showToast
 import com.scwang.smart.refresh.layout.constant.RefreshState
+import com.test.picsumphoto.Const
 import com.test.picsumphoto.R
 import com.test.picsumphoto.common.callback.RequestLifecycle
 import com.test.picsumphoto.common.view.SimpleDividerDecoration
@@ -60,6 +62,8 @@ class MainActivity : AppCompatActivity(), RequestLifecycle {
 
     private lateinit var adapter: PhotosAdapter
 
+    private lateinit var layoutManager: StaggeredGridLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -67,15 +71,40 @@ class MainActivity : AppCompatActivity(), RequestLifecycle {
         loading = findViewById(R.id.loading)
 
         adapter = PhotosAdapter(this, viewModel.dataList)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.addItemDecoration(SimpleDividerDecoration(this))
-        recyclerView.adapter = adapter
+        layoutManager = StaggeredGridLayoutManager(adapter.type, LinearLayoutManager.VERTICAL)
+
         recyclerView.setHasFixedSize(true)
-        recyclerView.itemAnimator = null
+        layoutManager.spanCount = adapter.type
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = layoutManager
+
         refreshLayout.setOnRefreshListener { viewModel.onRefresh() }
         refreshLayout.gone()
         observe()
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+            R.id.feeding -> {
+                adapter.type = Const.ItemViewType.TYPE_2
+                layoutManager.spanCount = adapter.type
+                adapter.notifyDataSetChanged()
+                true
+            }
+            R.id.normal -> {
+                adapter.type = Const.ItemViewType.TYPE_1
+                layoutManager.spanCount = adapter.type
+                adapter.notifyDataSetChanged()
+                true
+            }
+            else -> false
+        }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        var inflater = menuInflater
+        inflater.inflate(R.menu.menu_option, menu)
+        return true
     }
 
     override fun onResume() {
@@ -117,7 +146,7 @@ class MainActivity : AppCompatActivity(), RequestLifecycle {
     }
 
 
-    open fun loadDataOnce() {
+    private fun loadDataOnce() {
         startLoading()
     }
 
@@ -173,13 +202,14 @@ class MainActivity : AppCompatActivity(), RequestLifecycle {
             }
             when (refreshLayout.state) {
                 RefreshState.None, RefreshState.Refreshing -> {
-                    val itemCount = viewModel.dataList.size
+                    viewModel.dataList.clear()
                     viewModel.dataList.addAll(response)
-                    adapter.notifyItemRangeInserted(itemCount, response.size)
+                    adapter.notifyDataSetChanged()
                 }
                 else -> {
                 }
             }
+
             refreshLayout.finishLoadMoreWithNoMoreData()
         })
     }

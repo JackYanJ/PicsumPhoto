@@ -12,4 +12,6 @@
     <string name="unknown_error">unknown error</string>
 
     <string name="srl_footer_nothing">no more data</string>
+    <string name="feeding">feeding</string>
+    <string name="normal">normal</string>
 </resources>

@@ -86,8 +86,8 @@ interface Const {
 
             const val MAX = 100   //避免外部其他类型与此处包含的某个类型重复。\
 
-            const val TYPE_1 = 0
-            const val TYPE_2 = 1
+            const val TYPE_1 = 1
+            const val TYPE_2 = 2
         }
     }
 
